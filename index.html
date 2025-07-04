@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mar's Portfolio</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Arial', sans-serif;
+      user-select: none;
+    }
+
+    body {
+      background: linear-gradient(45deg, #0a0a0a, #1c1c1c);
+      color: #d0d0d0;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    header {
+      text-align: center;
+      padding: 50px 20px;
+      background: linear-gradient(90deg, #00ff88, #00b359);
+      background-size: 200% 200%;
+      animation: gradientShift 5s ease infinite;
+      clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
+    }
+
+    .profile-pic {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      margin: 0 auto 20px;
+      overflow: hidden;
+      border: 3px solid #0a0a0a;
+      animation: pulse 2s ease-in-out infinite;
+      cursor: pointer;
+    }
+
+    .profile-pic img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+
+    .profile-pic:hover img {
+      transform: scale(1.1);
+    }
+
+    header h1 {
+      font-size: 3.5rem;
+      color: #0a0a0a;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+      animation: fadeInText 1.5s ease-out;
+    }
+
+    header p {
+      font-size: 1.2rem;
+      color: #d0d0d0;
+      margin-top: 10px;
+      animation: fadeInText 2s ease-out 0.5s;
+      animation-fill-mode: both;
+    }
+
+    .notification {
+      position: fixed;
+      bottom: 20px;
+      right: -300px;
+      background: #00ff88;
+      color: #0a0a0a;
+      padding: 15px 25px;
+      border-radius: 5px;
+      font-size: 1rem;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.7);
+      transition: right 0.5s ease;
+      z-index: 1000;
+    }
+
+    .notification.active {
+      right: 20px;
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.7); }
+      70% { box-shadow: 0 0 0 10px rgba(0, 255, 136, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(0, 255, 136, 0); }
+    }
+
+    @keyframes fadeInText {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(-20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .portfolio-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      padding: 40px;
+      max-width: 1200px;
+      margin: 0 auto;
+      transition: opacity 0.5s;
+    }
+
+    .portfolio-item {
+      position: relative;
+      overflow: hidden;
+      border-radius: 10px;
+      background: #1c1c1c;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.7);
+      transition: transform 0.3s, opacity 0.5s;
+      cursor: pointer;
+      animation: slideIn 0.7s ease-out;
+      --shine-x: 50%;
+      --shine-y: 50%;
+    }
+
+    .portfolio-item::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: radial-gradient(circle at var(--shine-x) var(--shine-y), rgba(255,255,255,0.2), transparent 60%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      mix-blend-mode: overlay;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .portfolio-item:hover::before {
+      opacity: 1;
+    }
+
+    .media-wrapper {
+      perspective: 1000px;
+      transform-style: preserve-3d;
+      transition: transform 0.2s ease;
+    }
+
+    .portfolio-item img,
+    .portfolio-item video {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      transition: transform 0.5s;
+      will-change: transform;
+      transform-style: preserve-3d;
+      backface-visibility: hidden;
+      z-index: 1;
+    }
+
+    .portfolio-item .overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(to top, rgba(0, 255, 136, 0.8), transparent);
+      padding: 20px;
+      transform: translateY(100%);
+      transition: transform 0.3s;
+      z-index: 3;
+    }
+
+    .portfolio-item:hover .overlay {
+      transform: translateY(0);
+    }
+
+    .portfolio-item h3 {
+      color: #d0d0d0;
+      font-size: 1.5rem;
+    }
+
+    .portfolio-item p {
+      color: #a0a0a0;
+      font-size: 1rem;
+    }
+
+    .fullscreen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 1000;
+      background: #0a0a0a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transform: scale(0.8);
+      opacity: 0;
+      transition: transform 0.5s ease, opacity 0.5s ease;
+    }
+
+    .fullscreen.active {
+      transform: scale(1);
+      opacity: 1;
+    }
+
+    .fullscreen img,
+    .fullscreen video {
+      max-width: 90%;
+      max-height: 90%;
+      object-fit: contain;
+      border-radius: 10px;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      font-size: 2rem;
+      color: #00ff88;
+      cursor: pointer;
+      transition: color 0.3s, transform 0.3s;
+    }
+
+    .close-btn:hover {
+      color: #00b359;
+      transform: rotate(90deg);
+    }
+
+    .portfolio-grid.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    @media (max-width: 768px) {
+      header h1 {
+        font-size: 2.5rem;
+      }
+
+      .profile-pic {
+        width: 100px;
+        height: 100px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="profile-pic" id="profile-pic">
+      <img src="https://via.placeholder.com/150.png?text=Profile+Pic" alt="Profile Picture">
+    </div>
+    <h1>Mar's Portfolio</h1>
+    <p>Showcasing my creative projects with a touch of style</p>
+  </header>
+
+  <section class="portfolio-grid">
+    <div class="portfolio-item">
+      <div class="media-wrapper">
+        <img src="https://via.placeholder.com/300x200.png?text=Project+1" alt="Project 1">
+      </div>
+      <div class="overlay">
+        <h3>Project One</h3>
+        <p>A stunning web design project with modern aesthetics.</p>
+      </div>
+    </div>
+
+    <div class="portfolio-item">
+      <div class="media-wrapper">
+        <video autoplay muted loop>
+          <source src="https://via.placeholder.com/300x200.mp4?text=Video+Project+2" type="video/mp4">
+        </video>
+      </div>
+      <div class="overlay">
+        <h3>Video Project Two</h3>
+        <p>An animated video showcase with dynamic effects.</p>
+      </div>
+    </div>
+
+    <div class="portfolio-item">
+      <div class="media-wrapper">
+        <img src="https://via.placeholder.com/300x200.png?text=Project+3" alt="Project 3">
+      </div>
+      <div class="overlay">
+        <h3>Project Three</h3>
+        <p>Creative graphic design with bold visuals.</p>
+      </div>
+    </div>
+
+    <div class="portfolio-item">
+      <div class="media-wrapper">
+        <video autoplay muted loop>
+          <source src="https://via.placeholder.com/300x200.mp4?text=Video+Project+4" type="video/mp4">
+        </video>
+      </div>
+      <div class="overlay">
+        <h3>Video Project Four</h3>
+        <p>A cinematic video project with immersive visuals.</p>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    // Fullscreen viewer
+    const portfolioItems = document.querySelectorAll('.portfolio-item');
+    const portfolioGrid = document.querySelector('.portfolio-grid');
+
+    portfolioItems.forEach(item => {
+      item.addEventListener('click', () => {
+        const fullscreenDiv = document.createElement('div');
+        fullscreenDiv.classList.add('fullscreen');
+
+        const media = item.querySelector('img') || item.querySelector('video');
+        const clonedMedia = media.cloneNode(true);
+        if (clonedMedia.tagName === 'VIDEO') {
+          clonedMedia.autoplay = true;
+          clonedMedia.muted = true;
+          clonedMedia.loop = true;
+        }
+        fullscreenDiv.appendChild(clonedMedia);
+
+        const closeBtn = document.createElement('span');
+        closeBtn.classList.add('close-btn');
+        closeBtn.innerHTML = '✕';
+        fullscreenDiv.appendChild(closeBtn);
+
+        document.body.appendChild(fullscreenDiv);
+        portfolioGrid.classList.add('hidden');
+
+        setTimeout(() => {
+          fullscreenDiv.classList.add('active');
+        }, 10);
+
+        closeBtn.addEventListener('click', () => {
+          fullscreenDiv.classList.remove('active');
+          setTimeout(() => {
+            fullscreenDiv.remove();
+            portfolioGrid.classList.remove('hidden');
+          }, 500);
+        });
+      });
+    });
+
+    // Profile picture Discord copy
+    const profilePic = document.querySelector('#profile-pic');
+    profilePic.addEventListener('click', () => {
+      navigator.clipboard.writeText('@MarCreative#1234');
+      const notification = document.createElement('div');
+      notification.classList.add('notification');
+      notification.textContent = 'Discord link copied!';
+      document.body.appendChild(notification);
+
+      setTimeout(() => notification.classList.add('active'), 10);
+      setTimeout(() => {
+        notification.classList.remove('active');
+        setTimeout(() => notification.remove(), 500);
+      }, 3000);
+    });
+
+    // 3D skew + shine tracking
+    document.querySelectorAll('.portfolio-item').forEach(item => {
+      const mediaWrapper = item.querySelector('.media-wrapper');
+
+      item.addEventListener('mousemove', e => {
+        const rect = item.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        const rotateX = ((y - centerY) / centerY) * -10;
+        const rotateY = ((x - centerX) / centerX) * 10;
+
+        mediaWrapper.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+        item.style.setProperty('--shine-x', `${x}px`);
+        item.style.setProperty('--shine-y', `${y}px`);
+      });
+
+      item.addEventListener('mouseleave', () => {
+        mediaWrapper.style.transform = `rotateX(0deg) rotateY(0deg)`;
+      });
+    });
+  </script>
+</body>
+</html>
