@@ -307,7 +307,6 @@
   </section>
 
   <script>
-    // Fullscreen viewer
     const portfolioItems = document.querySelectorAll('.portfolio-item');
     const portfolioGrid = document.querySelector('.portfolio-grid');
 
@@ -318,11 +317,17 @@
 
         const media = item.querySelector('img') || item.querySelector('video');
         const clonedMedia = media.cloneNode(true);
+
         if (clonedMedia.tagName === 'VIDEO') {
+          // Pause all other videos
+          document.querySelectorAll('.portfolio-item video').forEach(v => v.pause());
+
+          clonedMedia.controls = true;
           clonedMedia.autoplay = true;
-          clonedMedia.muted = true;
-          clonedMedia.loop = true;
+          clonedMedia.muted = false;
+          clonedMedia.loop = false;
         }
+
         fullscreenDiv.appendChild(clonedMedia);
 
         const closeBtn = document.createElement('span');
@@ -338,6 +343,9 @@
         }, 10);
 
         closeBtn.addEventListener('click', () => {
+          if (clonedMedia.tagName === 'VIDEO') {
+            clonedMedia.pause();
+          }
           fullscreenDiv.classList.remove('active');
           setTimeout(() => {
             fullscreenDiv.remove();
@@ -347,7 +355,7 @@
       });
     });
 
-    // Profile picture Discord copy
+    // Copy Discord link on profile pic click
     const profilePic = document.querySelector('#profile-pic');
     profilePic.addEventListener('click', () => {
       navigator.clipboard.writeText('https://discord.gg/yHnrxqbk');
@@ -363,7 +371,7 @@
       }, 3000);
     });
 
-    // 3D skew + shine tracking
+    // 3D effect and shine
     document.querySelectorAll('.portfolio-item').forEach(item => {
       const mediaWrapper = item.querySelector('.media-wrapper');
 
